@@ -1,0 +1,23 @@
+{
+  "name": "go_camp",
+  "version": "1.0.0",
+  "description": "web app to checkout campsites and make reservation.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/song-xiao/GoCamp.git"
+  },
+  "author": "Song Xiao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/song-xiao/GoCamp/issues"
+  },
+  "homepage": "https://github.com/song-xiao/GoCamp#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.3"
+  }
+}

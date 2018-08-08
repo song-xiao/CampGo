@@ -3,8 +3,10 @@ var app = express();
 var bodyParser = require("body-parser");
 // Arbitrary campgrounds
 var campgrounds = [
-    { name: "Porteau Cove", image: "https://pixabay.com/get/e83db50a21f4073ed1584d05fb1d4e97e07ee3d21cac104496f3c67da7eeb6b8_340.jpg"},
-    { name: "Narin Falls", image: "https://pixabay.com/get/e837b1072af4003ed1584d05fb1d4e97e07ee3d21cac104496f3c67da7eeb6b8_340.jpg"},
+    { name: "Porteau Cove", image: "https://cdn.pixabay.com/photo/2014/11/27/18/36/tent-548022_1280.jpg"},
+    { name: "Narin Falls", image: "https://cdn.pixabay.com/photo/2016/11/21/15/14/camping-1845906_1280.jpg"},
+    { name: "Cultus Lake", image: "https://cdn.pixabay.com/photo/2016/11/29/04/17/bonfire-1867275_1280.jpg"},
+    { name: "Alice Lake", image: "https://cdn.pixabay.com/photo/2016/11/22/23/08/adventure-1851092_1280.jpg"}
     ];
 
 app.use(bodyParser.urlencoded({extended:true}));

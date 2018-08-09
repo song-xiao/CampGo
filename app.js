@@ -2,10 +2,12 @@ var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"),
-    Campground = require("./models/campground");
-
-mongoose.connect("mongodb://localhost/go_camp");
+    Campground = require("./models/campground"),
+    Comment   = require("./models/comment");
+    // seedDB = require("./seeds");
     
+mongoose.connect("mongodb://localhost/go_camp");
+// seedDB();
 // Campground.create(
 //     { name: "Narin Falls", 
 //       image: "https://cdn.pixabay.com/photo/2016/11/21/15/14/camping-1845906_1280.jpg",
@@ -42,7 +44,7 @@ app.get("/campgrounds",function(req,res){
         if (err) {
             console.log(err);
         } else {
-            res.render("index", {campgrounds:camps})
+            res.render("campgrounds/index", {campgrounds:camps})
         }
     });
 });
@@ -72,21 +74,63 @@ app.post("/campgrounds",function(req,res){
 
 // NEW - show form to create new campground
 app.get("/campgrounds/new",function(req, res){
-    res.render("new");
+    res.render("campgrounds/new");
 });
 
 // SHOW - show more info of one campground
 app.get("/campgrounds/:id", function(req,res){
     // find the campground with id
-    Campground.findById(req.params.id, function(err,foundCamp){
+    Campground.findById(req.params.id).populate("comments").exec(function(err,foundCamp){
        if (err) {
            console.log(err);
        } else {
            // render show template with the campground
-           res.render("show", {campground:foundCamp});
+           res.render("campgrounds/show", {campground:foundCamp});
        }
     });
     
+});
+
+// ===================
+// COMMENTS ROUTES
+// ===================
+
+app.get("/campgrounds/:id/comments/new",function(req,res){
+    // find campground by id
+    Campground.findById(req.params.id,function(err,camp){
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("comments/new", {campground:camp}); 
+        }
+    });
+});
+
+app.post("/campgrounds/:id/comments",function(req,res){
+    // lookup campground by id
+    Campground.findById(req.params.id,function(err,camp){
+        if (err) {
+            console.log(err);
+            res.redirect("/campgrounds");
+        } else {
+            // create new comment
+            Comment.create(req.body.comment, function(err,comment){
+               if (err){
+                   console.log(err);
+               } else {
+                   // add comment to campground
+                   camp.comments.push(comment);
+                   camp.save();
+                   // redirect to campground show page
+                   res.redirect("/campgrounds/" + camp._id);
+               }
+            });
+        }
+    });
+    
+    
+    // redirect campground show page
+   
 });
 
 app.listen(process.env.PORT, process.env.IP, function(){

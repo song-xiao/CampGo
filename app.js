@@ -1,19 +1,10 @@
 var express = require("express"), 
     app = express(),
     bodyParser = require("body-parser"),
-    mongoose = require("mongoose");
+    mongoose = require("mongoose"),
+    Campground = require("./models/campground");
 
 mongoose.connect("mongodb://localhost/go_camp");
-
-// setup scheme
-var campgroundScheme = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-// setup model
-var Campground = mongoose.model("Campground",campgroundScheme);
     
 // Campground.create(
 //     { name: "Narin Falls", 

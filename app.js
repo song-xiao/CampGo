@@ -2,37 +2,34 @@ var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"),
+    passport = require("passport"),
+    LocalStrategy = require("passport-local"),
     Campground = require("./models/campground"),
-    Comment   = require("./models/comment");
+    Comment   = require("./models/comment"),
+    User = require("./models/user");
     // seedDB = require("./seeds");
     
 mongoose.connect("mongodb://localhost/go_camp");
-// seedDB();
-// Campground.create(
-//     { name: "Narin Falls", 
-//       image: "https://cdn.pixabay.com/photo/2016/11/21/15/14/camping-1845906_1280.jpg",
-//       description: "This is a medium campground with Narin Falls in walking distance. You can reach Whistler and Pemberton in half an hour drive."
-//     },function(err,camp){
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             console.log("Newly created camp");
-//             console.log(camp);
-//         }
-//     }
-// );
-
-// Arbitrary campgrounds
-// var campgrounds = [
-//     { name: "Porteau Cove", image: "https://cdn.pixabay.com/photo/2014/11/27/18/36/tent-548022_1280.jpg"},
-//     { name: "Narin Falls", image: "https://cdn.pixabay.com/photo/2016/11/21/15/14/camping-1845906_1280.jpg"},
-//     { name: "Cultus Lake", image: "https://cdn.pixabay.com/photo/2016/11/29/04/17/bonfire-1867275_1280.jpg"},
-//     { name: "Alice Lake", image: "https://cdn.pixabay.com/photo/2016/11/22/23/08/adventure-1851092_1280.jpg"}
-//     ];
-
 app.use(bodyParser.urlencoded({extended:true}));
 app.set("view engine","ejs");
 app.use(express.static(__dirname + "/public"));
+
+// PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    secret: "Once again Rusty wins cutest dog!",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use(function(req, res, next){
+   res.locals.currentUser = req.user;
+   next();
+});
 
 app.get("/",function(req,res){
    res.render("landing"); 
@@ -129,6 +126,55 @@ app.post("/campgrounds/:id/comments",function(req,res){
         }
     });
 });
+
+//  ===========
+// AUTH ROUTES
+//  ===========
+
+// show register form
+app.get("/register", function(req, res){
+   res.render("register"); 
+});
+
+//handle sign up logic
+app.post("/register", function(req, res){
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, function(err, user){
+        if(err){
+            console.log(err);
+            return res.render("register");
+        }
+        passport.authenticate("local")(req, res, function(){
+           res.redirect("/campgrounds"); 
+        });
+    });
+});
+
+// show login form
+app.get("/login", function(req, res){
+   res.render("login"); 
+});
+
+// handling login logic
+app.post("/login", passport.authenticate("local", 
+    {
+        successRedirect: "/campgrounds",
+        failureRedirect: "/login"
+    }), function(req, res){
+});
+
+// logic route
+app.get("/logout", function(req, res){
+   req.logout();
+   res.redirect("/campgrounds");
+});
+
+function isLoggedIn(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect("/login");
+}
 
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log("app starts!");

@@ -6,17 +6,15 @@ var express     = require("express"),
     LocalStrategy = require("passport-local"),
     methodOverride = require("method-override"),
     flash = require("connect-flash"),
-    Campground  = require("./models/campground"),
-    Comment     = require("./models/comment"),
-    User        = require("./models/user")
- // seedDB = require("./seeds");
+    User        = require("./models/user");
     
 //requring routes
 var commentRoutes    = require("./routes/comments"),
     campgroundRoutes = require("./routes/campgrounds"),
-    indexRoutes      = require("./routes/index")
+    indexRoutes      = require("./routes/index");
     
-mongoose.connect("mongodb://localhost/go_camp");
+// mongoose.connect("mongodb://localhost/go_camp");
+mongoose.connect("mongodb://song:gocampv1@ds119422.mlab.com:19422/gocamp");
 app.use(bodyParser.urlencoded({extended:true}));
 app.set("view engine","ejs");
 app.use(express.static(__dirname + "/public"));

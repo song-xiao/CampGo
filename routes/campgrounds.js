@@ -58,7 +58,11 @@ router.get("/:id", function(req, res){
 // EDIT - edit campground info
 router.get("/:id/edit",checkCampgroundOwnership, function(req,res){
     Campground.findById(req.params.id,function(err, camp){
-        res.render("campgrounds/edit", {campground:camp});   
+        if (err) {
+            res.redirect("/campgrounds");
+        } else {
+            res.render("campgrounds/edit", {campground:camp});   
+        }
     });
 });
 
